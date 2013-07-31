@@ -1,23 +1,19 @@
-from django.conf.urls.defaults import *
-from django.views.generic import list_detail, create_update
-from models import *
+from django.conf.urls import patterns, url
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic import ListView
+from ip_addresses.models import *
 import views
 from django.core.urlresolvers import reverse
 
-classrule_info = {
-    'queryset': ClassRule.objects.all(),
-    'template_name': 'display_classrule.html',
-}
-
 classrule_form = {
     'form_class': ClassRuleForm,
-    'template_name': 'add.html',
+    'template_name': 'ip_addresses/add.html',
 }
 
 classrule_delete = {
     'model': ClassRule,
     'post_delete_redirect': '../..',
-    'template_name': 'delete_confirm_classrule.html',
+    'template_name': 'ip_addresses/delete_confirm_classrule.html',
 }
 
 urlpatterns = patterns('',
@@ -40,12 +36,11 @@ urlpatterns = patterns('',
     url(r'^dhcpaddresspool/(?P<range_start>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/(?P<range_finish>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/$', views.dhcpaddresspool_display, name='dhcpaddresspool-display'),
     url(r'^dhcpaddresspool/(?P<range>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/delete/$', views.dhcpaddresspool_delete, name='dhcpaddresspool-delete'),
 
-    url(r'^classrule/$', list_detail.object_list, classrule_info, name='classrule-displaytop'),
-    url(r'^classrule/(?P<object_id>\d+)/$', list_detail.object_detail, classrule_info, name='classrule-display'),
-    url(r'^classrule/(?P<object_id>\d+)/modify/$', create_update.update_object, classrule_form, name='classrule-modify'),
-    url(r'^classrule/(?P<object_id>\d+)/delete/$', create_update.delete_object, classrule_delete, name='classrule-delete'),
-    url(r'^classrule/add/$', create_update.create_object, classrule_form, name='classrule-add'),
+    url(r'^classrule/$', ListView.as_view(queryset=ClassRule.objects.all(), template_name='ip_addresses/display_classrule.html'), name='classrule-displaytop'),
+    url(r'^classrule/(?P<object_id>\d+)/$', ListView.as_view(queryset=ClassRule.objects.all(), template_name='ip_addresses/display_classrule.html'), name='classrule-display'),
+    url(r'^classrule/(?P<object_id>\d+)/modify/$', UpdateView.as_view(), classrule_form, name='classrule-modify'),
+    url(r'^classrule/(?P<object_id>\d+)/delete/$', DeleteView.as_view(), classrule_delete, name='classrule-delete'),
+    url(r'^classrule/add/$', CreateView.as_view(), classrule_form, name='classrule-add'),
 
     url(r'^dhcpd.conf/$', views.dhcpd_conf_generate, name='dhcp-conf-generate'),
 )
-

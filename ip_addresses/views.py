@@ -1,6 +1,8 @@
-from www_example_com.ip_addresses.models import *
+from ip_addresses.models import *
 from django.http import HttpResponse, HttpResponseRedirect
+from django.core.context_processors import csrf
 from django.shortcuts import render_to_response, get_object_or_404
+from django.template import RequestContext
 from django.core.urlresolvers import reverse
 import subprocess
 
@@ -17,7 +19,7 @@ def networkaddress_display(request, address=None):
         dhcp_net = DHCPNetwork.objects.get(physical_net=parent)
     except:
         dhcp_net = None
-    return render_to_response('display.html', {'parent': parent, 
+    return render_to_response('ip_addresses/display.html', {'parent': parent, 
                                                'addresses_list': addr_list, 
                                                'has_subnets': has_subnets,
                                                'dhcp_net': dhcp_net,})
@@ -42,7 +44,7 @@ def networkaddress_add(request, address=None):
             return HttpResponseRedirect(url)
     else:
         form = NetworkAddressAddForm()
-    return render_to_response('add.html', {'form': form,})    
+    return render_to_response('ip_addresses/add.html', {'form': form,}, context_instance=RequestContext(request))    
 
 def networkaddress_modify(request, address=None):
     address_obj = get_network_object_from_address(address)
@@ -55,7 +57,7 @@ def networkaddress_modify(request, address=None):
     else:
         # first time display
         form = NetworkAddressModifyForm(initial={ 'description': address_obj.description, })
-    return render_to_response('add.html', {'form': form,})
+    return render_to_response('ip_addresses/add.html', {'form': form,}, context_instance=RequestContext(request))
 
 # DHCPNETWORK view functions
 
@@ -69,7 +71,7 @@ def dhcpnetwork_add(request, address=None):
             return HttpResponseRedirect(network_addr.get_absolute_url())
     else:
         form = DHCPNetworkAddForm()
-    return render_to_response('add.html', {'form': form,})
+    return render_to_response('ip_addresses/add.html', {'form': form,}, context_instance=RequestContext(request))
 
 def dhcpnetwork_delete(request, address=None):
     network_addr = get_network_object_from_address(address)
@@ -89,13 +91,13 @@ def dhcpnetwork_modify(request, address=None):
     else:
         # first time display
         form = DHCPNetworkAddForm(instance=dhcp_net)
-    return render_to_response('add.html', {'form': form,})
+    return render_to_response('ip_addresses/add.html', {'form': form,}, context_instance=RequestContext(request))
 
 def dhcpnetwork_display(request, address=None):
     dhcp_net = get_dhcp_object_from_address(address)
     dhcp_pools = DHCPAddressPool.objects.filter(dhcp_network=dhcp_net)
     class_rules = ClassRule.objects.all()
-    return render_to_response('display_dhcp.html', {'dhcp_net': dhcp_net,
+    return render_to_response('ip_addresses/display_dhcp.html', {'dhcp_net': dhcp_net,
                                                     'dhcp_pools': dhcp_pools,
                                                     'class_rules': class_rules,})
 
@@ -114,7 +116,7 @@ def dhcpaddresspool_add(request, address=None):
             return HttpResponseRedirect(dhcp_net.get_absolute_url())
     else:
         form = DHCPAddressPoolForm()
-    return render_to_response('add.html', {'form': form,})
+    return render_to_response('ip_addresses/add.html', {'form': form,}, context_instance=RequestContext(request))
 
 def dhcpaddresspool_delete(request, range=None):
     range_start, range_finish = range.split('/')
@@ -127,7 +129,7 @@ def dhcpaddresspool_delete(request, range=None):
 
 def classrule_display(request, rule_id=None):
     class_rules = ClassRule.objects.all()
-    return render_to_response('display_classrules.html')
+    return render_to_response('ip_addresses/display_classrules.html')
 
 def classrule_add(request):
     if request.method == 'POST':
@@ -137,7 +139,7 @@ def classrule_add(request):
             return HttpResponseRedirect(request.META['HTTP_REFERER'])
     else:
         form = ClassRuleForm()
-    return render_to_response('add.html', {'form': form,})
+    return render_to_response('ip_addresses/add.html', {'form': form,}, context_instance=RequestContext(request))
 
 
 def networkaddress_ping(request, address=None):
@@ -187,5 +189,4 @@ def responding_to_ping(address, timeout=1):
         return True
     else:
         return False
-
 

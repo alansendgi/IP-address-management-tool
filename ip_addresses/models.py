@@ -39,11 +39,11 @@ class NetworkAddress(models.Model):
         return ".".join(nmask_array)
 
 
-
 class NetworkAddressAddForm(ModelForm):
     class Meta:
         model = NetworkAddress
         exclude = ('parent', )
+
 
 class NetworkAddressModifyForm(ModelForm):
     class Meta:
@@ -58,12 +58,14 @@ class DNSServer(models.Model):
     def __unicode__(self):
         return "%s (%s)" % (self.address, self.comment[:20])
 
+
 class DomainName(models.Model):
     name = models.CharField(max_length=100)
     comment = models.CharField(max_length=400)
 
     def __unicode__(self):
         return "%s (%s)" % (self.name, self.comment[:20])
+
 
 class DHCPNetwork(models.Model):
     physical_net = models.OneToOneField(NetworkAddress)
@@ -78,10 +80,12 @@ class DHCPNetwork(models.Model):
     def get_absolute_url(self):
         return ('dhcpnetwork-display', (), {'address': '%s/%s' % (self.physical_net.address, self.physical_net.network_size)})
 
+
 class DHCPNetworkAddForm(ModelForm):
     class Meta:
         model = DHCPNetwork
         exclude = ('physical_net',)
+
 
 class ClassRule(models.Model):
     rule = models.TextField()
@@ -94,9 +98,11 @@ class ClassRule(models.Model):
     def get_absolute_url(self):
         return ('classrule-display', (), {'object_id': self.id})
 
+
 class ClassRuleForm(ModelForm):
     class Meta:
         model = ClassRule
+
 
 class DHCPAddressPool(models.Model):
     dhcp_network = models.ForeignKey(DHCPNetwork)
@@ -113,7 +119,8 @@ class DHCPAddressPool(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('dhcpaddresspool-display', (), {'range_start': self.range_start, 'range_finish': self.range_finish})
-    
+
+
 class DHCPAddressPoolForm(ModelForm):
     class Meta:
         model = DHCPAddressPool
