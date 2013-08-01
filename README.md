@@ -1,6 +1,9 @@
 IP Address management tool
 ==========================
 
+This was forked from https://github.com/rytis/IP-address-management-tool and I 
+updated it to support Django 1.5.1.
+
 This web based application keeps track of allocated IP addresses. It is also capable of
 allocating and maintaining DHCP IP ranges. Once the IP ranges are defined it can produce
 the ISC DHCP compatible DHCP configuration file.
