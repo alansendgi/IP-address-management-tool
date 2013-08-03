@@ -1,4 +1,4 @@
-from www_example_com.ip_addresses.models import *
+from ip_addresses.models import *
 from django.contrib import admin
 
 class NetworkAddressAdmin(admin.ModelAdmin):

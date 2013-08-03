@@ -1,9 +1,10 @@
 from django.conf.urls import patterns, url
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import ListView
-from ip_addresses.models import *
-import views
 from django.core.urlresolvers import reverse
+
+from ip_addresses.models import *
+import ip_addresses.views as views
 
 classrule_form = {
     'form_class': ClassRuleForm,

@@ -164,6 +164,51 @@ def dhcpd_conf_generate(request):
                               mimetype='text/plain')
 
 
+
+### add these to apps/ip_addresses/views.py
+# NETWORKDEVICE view functions
+
+def networkdevice_display(request, device=None):
+    ##parent = get_network_object_from_device(device)
+    device_list = NetworkDevice.objects.all()
+    return render_to_response('ip_addresses/display_device.html', {'device_list': device_list,})
+
+def networkdevice_delete(request, device=None):
+    device_obj = get_network_object_from_device(device)
+    parent = device_obj.parent
+    device_obj.delete()
+    redirect_to = '../../../'
+    if parent:
+        redirect_to = parent.get_absolute_url()
+    return HttpResponseRedirect(redirect_to)
+
+def networkdevice_add(request, device=None):
+    if request.method == 'POST':
+        ##parent = get_network_object_from_device(device)
+        new_device = NetworkDevice()
+        form = NetworkDeviceAddForm(request.POST, instance=new_device)
+        if form.is_valid():
+            form.save()
+            url = reverse('networkdevice-displaytop')
+            return HttpResponseRedirect(url)
+    else:
+        form = NetworkDeviceAddForm()
+    return render_to_response('ip_addresses/add.html', {'form': form,}, context_instance=RequestContext(request))    
+
+def networkdevice_modify(request, device=None):
+    device_obj = NetworkDevice(device)
+    if request.method == 'POST':
+        form = NetworkDeviceModifyForm(request.POST, instance=device_obj)
+        if form.is_valid():
+            form.save()
+            url = reverse('networkdevice-displaytop')
+            return HttpResponseRedirect(url)
+    else:
+        # first time display
+        form = NetworkDeviceModifyForm(initial={ 'description': device_obj.description, })
+    return render_to_response('ip_addresses/add.html', {'form': form,}, context_instance=RequestContext(request))
+
+
 ############################################################################
 # helper functions
 
